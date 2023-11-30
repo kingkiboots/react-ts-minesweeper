@@ -1,15 +1,4 @@
-export type CellValue =
-  | 'none'
-  | 'one'
-  | 'two'
-  | 'three'
-  | 'four'
-  | 'five'
-  | 'six'
-  | 'seven'
-  | 'eight'
-  | 'nine'
-  | 'bomb';
+export type CellValue = 'none' | 'bomb' | number;
 
 export type CellState = 'unknown' | 'visible' | 'flagged';
 

@@ -32,6 +32,7 @@
 
 .Face {
   @include borders; // 만약 그냥 디폴트 값 지정해놓고 그걸로 쓰고 싶으면 인자 안주면 됨
+  @include buttons;
   width: 52px;
   height: 52px;
   font-size: 35px;

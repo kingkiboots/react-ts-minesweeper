@@ -7,10 +7,18 @@ import Button from '../Button';
 
 const App: React.FC = () => {
   const [cells] = useState(generateCells());
+  console.log('cells', cells);
 
   const renderCells = (): React.ReactNode => {
     return cells.map((row, rowIndex) =>
-      row.map((cell, colIndex) => <Button key={`${rowIndex}-${colIndex}`} />),
+      row.map((cell, colIndex) => (
+        <Button
+          key={`${rowIndex}-${colIndex}`}
+          cell={cell}
+          row={rowIndex}
+          col={colIndex}
+        />
+      )),
     );
   };
 
