@@ -1,6 +1,52 @@
 import { MAX_COLS, MAX_ROWS, NO_OF_BOMBS } from '../constants';
 import { Cell } from '../types';
 
+const grabAllAdjacentCells = (
+  cells: Cell[][],
+  rowParam: number,
+  colParam: number,
+): {
+  topLeftCell: Cell | null;
+  topCell: Cell | null;
+  topRightCell: Cell | null;
+  leftCell: Cell | null;
+  rightCell: Cell | null;
+  bottomLeftCell: Cell | null;
+  bottomCell: Cell | null;
+  bottomRightCell: Cell | null;
+} => {
+  const topLeftCell =
+    rowParam > 0 && colParam > 0 ? cells[rowParam - 1][colParam - 1] : null;
+  const topCell = rowParam > 0 ? cells[rowParam - 1][colParam] : null;
+  const topRightCell =
+    rowParam > 0 && colParam < MAX_COLS - 1
+      ? cells[rowParam - 1][colParam + 1]
+      : null;
+  const leftCell = colParam > 0 ? cells[rowParam][colParam - 1] : null;
+  const rightCell =
+    colParam < MAX_COLS - 1 ? cells[rowParam][colParam + 1] : null;
+  const bottomLeftCell =
+    rowParam < MAX_ROWS - 1 && colParam > 0
+      ? cells[rowParam + 1][colParam - 1]
+      : null;
+  const bottomCell =
+    rowParam < MAX_ROWS - 1 ? cells[rowParam + 1][colParam] : null;
+  const bottomRightCell =
+    rowParam < MAX_ROWS - 1 && colParam < MAX_COLS - 1
+      ? cells[rowParam + 1][colParam + 1]
+      : null;
+  return {
+    topLeftCell,
+    topCell,
+    topRightCell,
+    leftCell,
+    rightCell,
+    bottomLeftCell,
+    bottomCell,
+    bottomRightCell,
+  };
+};
+
 export const generateCells = (): Cell[][] => {
   let cells: Cell[][] = [];
 
@@ -47,35 +93,25 @@ export const generateCells = (): Cell[][] => {
       const currentCell = cells[rowIndex][colIndex];
       if (currentCell.value === 'bomb') continue;
       let numberOfBombs = 0;
-      const topLeftBomb =
-        rowIndex > 0 && colIndex > 0 ? cells[rowIndex - 1][colIndex - 1] : null;
-      const topBomb = rowIndex > 0 ? cells[rowIndex - 1][colIndex] : null;
-      const topRightBomb =
-        rowIndex > 0 && colIndex < MAX_COLS - 1
-          ? cells[rowIndex - 1][colIndex + 1]
-          : null;
-      const leftBomb = colIndex > 0 ? cells[rowIndex][colIndex - 1] : null;
-      const rightBomb =
-        colIndex < MAX_COLS - 1 ? cells[rowIndex][colIndex + 1] : null;
-      const bottomLeftBomb =
-        rowIndex < MAX_ROWS - 1 && colIndex > 0
-          ? cells[rowIndex + 1][colIndex - 1]
-          : null;
-      const bottomBomb =
-        rowIndex < MAX_ROWS - 1 ? cells[rowIndex + 1][colIndex] : null;
-      const bottomRightBomb =
-        rowIndex < MAX_ROWS - 1 && colIndex < MAX_COLS - 1
-          ? cells[rowIndex + 1][colIndex + 1]
-          : null;
+      const {
+        topLeftCell,
+        topCell,
+        topRightCell,
+        leftCell,
+        rightCell,
+        bottomLeftCell,
+        bottomCell,
+        bottomRightCell,
+      } = grabAllAdjacentCells(cells, rowIndex, colIndex);
 
-      if (topLeftBomb?.value === 'bomb') numberOfBombs++;
-      if (topBomb?.value === 'bomb') numberOfBombs++;
-      if (topRightBomb?.value === 'bomb') numberOfBombs++;
-      if (leftBomb?.value === 'bomb') numberOfBombs++;
-      if (rightBomb?.value === 'bomb') numberOfBombs++;
-      if (bottomLeftBomb?.value === 'bomb') numberOfBombs++;
-      if (bottomBomb?.value === 'bomb') numberOfBombs++;
-      if (bottomRightBomb?.value === 'bomb') numberOfBombs++;
+      if (topLeftCell?.value === 'bomb') numberOfBombs++;
+      if (topCell?.value === 'bomb') numberOfBombs++;
+      if (topRightCell?.value === 'bomb') numberOfBombs++;
+      if (leftCell?.value === 'bomb') numberOfBombs++;
+      if (rightCell?.value === 'bomb') numberOfBombs++;
+      if (bottomLeftCell?.value === 'bomb') numberOfBombs++;
+      if (bottomCell?.value === 'bomb') numberOfBombs++;
+      if (bottomRightCell?.value === 'bomb') numberOfBombs++;
 
       if (numberOfBombs > 0) {
         cells[rowIndex][colIndex] = {
@@ -86,4 +122,100 @@ export const generateCells = (): Cell[][] => {
     }
   }
   return cells;
+};
+
+export const openMultipleCells = (
+  cells: Cell[][],
+  rowParam: number,
+  colParam: number,
+): Cell[][] => {
+  const currentCell = cells[rowParam][colParam];
+
+  if (currentCell.state === 'visible' || currentCell.state === 'flagged') {
+    return cells; // 플래그 꽂혀있는것도 고려해야함
+  }
+
+  let newCells = cells.slice();
+  newCells[rowParam][colParam].state = 'visible';
+
+  const {
+    topLeftCell,
+    topCell,
+    topRightCell,
+    leftCell,
+    rightCell,
+    bottomLeftCell,
+    bottomCell,
+    bottomRightCell,
+  } = grabAllAdjacentCells(cells, rowParam, colParam);
+
+  if (topLeftCell?.state === 'unknown' && topLeftCell.value !== 'bomb') {
+    if (topLeftCell.value === 'none') {
+      // open more more cells
+      newCells = openMultipleCells(newCells, rowParam - 1, colParam - 1);
+    } else {
+      newCells[rowParam - 1][colParam - 1].state = 'visible';
+    }
+  }
+  if (topCell?.state === 'unknown' && topCell.value !== 'bomb') {
+    if (topCell.value === 'none') {
+      // open more more cells
+      newCells = openMultipleCells(newCells, rowParam - 1, colParam);
+    } else {
+      newCells[rowParam - 1][colParam].state = 'visible';
+    }
+  }
+  if (topRightCell?.state === 'unknown' && topRightCell.value !== 'bomb') {
+    if (topRightCell.value === 'none') {
+      // open more more cells
+      newCells = openMultipleCells(newCells, rowParam - 1, colParam + 1);
+    } else {
+      newCells[rowParam - 1][colParam + 1].state = 'visible';
+    }
+  }
+  if (leftCell?.state === 'unknown' && leftCell.value !== 'bomb') {
+    if (leftCell.value === 'none') {
+      // open more more cells
+      newCells = openMultipleCells(newCells, rowParam, colParam - 1);
+    } else {
+      newCells[rowParam][colParam - 1].state = 'visible';
+    }
+  }
+  if (rightCell?.state === 'unknown' && rightCell.value !== 'bomb') {
+    if (rightCell.value === 'none') {
+      // open more more cells
+      newCells = openMultipleCells(newCells, rowParam, colParam + 1);
+    } else {
+      newCells[rowParam][colParam + 1].state = 'visible';
+    }
+  }
+  if (bottomLeftCell?.state === 'unknown' && bottomLeftCell.value !== 'bomb') {
+    if (bottomLeftCell.value === 'none') {
+      // open more more cells
+      newCells = openMultipleCells(newCells, rowParam + 1, colParam - 1);
+    } else {
+      newCells[rowParam + 1][colParam - 1].state = 'visible';
+    }
+  }
+  if (bottomCell?.state === 'unknown' && bottomCell.value !== 'bomb') {
+    if (bottomCell.value === 'none') {
+      // open more more cells
+      newCells = openMultipleCells(newCells, rowParam + 1, colParam);
+    } else {
+      newCells[rowParam + 1][colParam].state = 'visible';
+    }
+  }
+  if (
+    bottomRightCell?.state === 'unknown' &&
+    bottomRightCell.value !== 'bomb'
+  ) {
+    if (bottomRightCell.value === 'none') {
+      // open more more cells
+      newCells = openMultipleCells(newCells, rowParam + 1, colParam + 1);
+    } else {
+      newCells[rowParam + 1][colParam + 1].state = 'visible';
+    }
+  }
+
+  return newCells;
 };

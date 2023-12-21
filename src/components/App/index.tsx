@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import './App.scss';
 import NumberDisplay from '../NumberDisplay';
-import { generateCells } from '../../utils';
+import { generateCells, openMultipleCells } from '../../utils';
 import Button from '../Button';
 
 import { Cell, Face } from '../../types';
@@ -49,14 +49,37 @@ const App: React.FC = () => {
 
   const handleCellClick = (rowParam: number, colParam: number) => (): void => {
     // start the game
-    if (!isAlive) setIsAlive(true);
+    if (!isAlive) {
+      // TODO: make sure you don't click on a bomb in the beginning!
+      setIsAlive(true);
+    }
+
+    const currentCell = cells[rowParam][colParam];
+
+    if (['visible', 'flagged'].includes(currentCell.state)) {
+      return;
+    }
+    let newCells = cells.slice();
+
+    if (currentCell.value === 'bomb') {
+      // TODO: take care of bomb click!'
+      return;
+    }
+    if (currentCell.value === 'none') {
+      // TODO:
+      newCells = openMultipleCells(newCells, rowParam, colParam);
+      setCells(newCells);
+      return;
+    }
+    newCells[rowParam][colParam].state = 'visible';
+    setCells(newCells);
   };
 
   const handleCellContext =
     (rowParam: number, colParam: number) =>
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
       e.preventDefault();
-      const _cells: Cell[][] = cells.slice(); // copy array
+      const _cells = cells.slice(); // copy array
       const currentCell = cells[rowParam][colParam];
 
       if (currentCell.state === 'visible') {
