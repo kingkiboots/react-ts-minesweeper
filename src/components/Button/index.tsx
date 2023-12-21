@@ -9,10 +9,19 @@ type ButtonProps = {
   cell: Cell;
   row: number;
   col: number;
+  onClick(rowParam: number, colParam: number): (...args: any[]) => void;
+  onContext(rowParam: number, colParam: number): (...args: any[]) => void;
 };
 
-const Button: React.FC<ButtonProps> = ({ cell, col, row }) => {
+const Button: React.FC<ButtonProps> = ({
+  cell,
+  col,
+  row,
+  onClick,
+  onContext,
+}) => {
   const { state, value } = cell;
+
   const renderContent = () => {
     if (state === 'visible') {
       if (value === 'bomb') {
@@ -42,6 +51,8 @@ const Button: React.FC<ButtonProps> = ({ cell, col, row }) => {
       className={`Button ${
         state === 'visible' ? 'visible' : ''
       } value-${value}`}
+      onClick={onClick(row, col)}
+      onContextMenu={onContext(row, col)}
     >
       {renderContent()}
     </div>
