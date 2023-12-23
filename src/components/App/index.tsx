@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import './App.scss';
 import NumberDisplay from '../NumberDisplay';
@@ -17,6 +17,8 @@ const App: React.FC = () => {
   const [hasWon, setHasWon] = useState<boolean>(false);
   const [bombCounter, setBombCounter] = useState<number>(NO_OF_BOMBS);
 
+  const bodyRef = useRef<HTMLDivElement>(null);
+
   console.log('cells', cells);
 
   useEffect(() => {
@@ -26,11 +28,11 @@ const App: React.FC = () => {
     const handleMouseUp = () => {
       setFace('😄');
     };
-    window.addEventListener('mousedown', handleMouseDown);
+    bodyRef.current?.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
 
     return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
+      bodyRef.current?.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
@@ -203,7 +205,9 @@ const App: React.FC = () => {
         {/* time */}
         <NumberDisplay value={time} />
       </div>
-      <div className="Body">{renderCells()}</div>
+      <div ref={bodyRef} className="Body">
+        {renderCells()}
+      </div>
     </div>
   );
 };
