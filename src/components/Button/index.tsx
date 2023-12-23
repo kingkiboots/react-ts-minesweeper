@@ -50,7 +50,7 @@ const Button: React.FC<ButtonProps> = ({
     <div
       className={`Button ${
         state === 'visible' ? 'visible' : ''
-      } value-${value}`}
+      } value-${value} ${cell.red ? 'red' : ''}`}
       onClick={onClick(row, col)}
       onContextMenu={onContext(row, col)}
     >

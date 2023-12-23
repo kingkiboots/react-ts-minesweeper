@@ -6,13 +6,15 @@ import { generateCells, openMultipleCells } from '../../utils';
 import Button from '../Button';
 
 import { Cell, Face } from '../../types';
-import { NO_OF_BOMBS } from '../../constants';
+import { MAX_COLS, MAX_ROWS, NO_OF_BOMBS } from '../../constants';
 
 const App: React.FC = () => {
   const [cells, setCells] = useState<Cell[][]>(generateCells());
   const [face, setFace] = useState<Face>('😄');
   const [time, setTime] = useState<number>(0);
   const [isAlive, setIsAlive] = useState<boolean>(false);
+  const [hasLost, setHasLost] = useState<boolean>(false);
+  const [hasWon, setHasWon] = useState<boolean>(false);
   const [bombCounter, setBombCounter] = useState<number>(NO_OF_BOMBS);
 
   console.log('cells', cells);
@@ -63,17 +65,65 @@ const App: React.FC = () => {
 
     if (currentCell.value === 'bomb') {
       // TODO: take care of bomb click!'
-      return;
-    }
-    if (currentCell.value === 'none') {
+      setHasLost(true);
+      newCells[rowParam][colParam].red = true;
+      newCells = showAllBombs();
+      setCells(newCells);
+    } else if (currentCell.value === 'none') {
       // TODO:
       newCells = openMultipleCells(newCells, rowParam, colParam);
-      setCells(newCells);
-      return;
+    } else {
+      newCells[rowParam][colParam].state = 'visible';
+      // setCells(newCells); // do it after checking has won
     }
-    newCells[rowParam][colParam].state = 'visible';
+
+    // check to see if you have won
+    // winning condition :
+    let isSafeUnknownCellExists = false;
+    for (let row = 0; row < MAX_ROWS; row++) {
+      for (let col = 0; col < MAX_COLS; col++) {
+        const currentCell = newCells[row][col];
+        if (currentCell.value !== 'bomb' && currentCell.state === 'unknown') {
+          isSafeUnknownCellExists = true;
+          break;
+        }
+      }
+    }
+    // 폭탄도 아니며, 아직 안열린 애들도 없다면
+    // 즉 이겼음
+    if (!isSafeUnknownCellExists) {
+      newCells = newCells.map((row) =>
+        row.map((cell) => {
+          if (cell.value === 'bomb') {
+            return {
+              ...cell,
+              state: 'flagged', //폭탄들은 깃발이 꽂힌채로 나옴
+            };
+          } else {
+            return cell;
+          }
+        }),
+      );
+      setHasWon(true);
+    }
+
     setCells(newCells);
   };
+
+  useEffect(() => {
+    if (hasLost) {
+      setFace('😵');
+      setIsAlive(false);
+      // TODO: show all bombs
+    }
+  }, [hasLost]);
+
+  useEffect(() => {
+    if (hasWon) {
+      setFace('😎');
+      setIsAlive(false);
+    }
+  }, [hasWon]);
 
   const handleCellContext =
     (rowParam: number, colParam: number) =>
@@ -96,11 +146,11 @@ const App: React.FC = () => {
     };
 
   const handleFaceClick = (): void => {
-    if (isAlive) {
-      setIsAlive(false);
-      setTime(0);
-      setCells(generateCells());
-    }
+    setIsAlive(false);
+    setTime(0);
+    setCells(generateCells());
+    setHasLost(false);
+    setHasWon(false);
   };
 
   const renderCells = (): React.ReactNode => {
@@ -115,6 +165,21 @@ const App: React.FC = () => {
           col={colIndex}
         />
       )),
+    );
+  };
+
+  const showAllBombs = (): Cell[][] => {
+    const currentCells = cells.slice();
+    return currentCells.map((row) =>
+      row.map((cell) => {
+        if (cell.value === 'bomb') {
+          return {
+            ...cell,
+            state: 'visible',
+          };
+        }
+        return cell;
+      }),
     );
   };
 
