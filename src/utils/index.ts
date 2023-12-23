@@ -75,8 +75,8 @@ export const generateCells = (): Cell[][] => {
         row.map((cell, colIndex) => {
           if (randomRow === rowIndex && randomCol === colIndex) {
             return {
-              state: cell.state,
               value: 'bomb',
+              state: cell.state,
             };
           }
           return cell;

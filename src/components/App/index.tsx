@@ -50,18 +50,25 @@ const App: React.FC = () => {
   }, [isAlive, time]);
 
   const handleCellClick = (rowParam: number, colParam: number) => (): void => {
+    let newCells = cells.slice();
     // start the game
     if (!isAlive) {
-      // TODO: make sure you don't click on a bomb in the beginning!
+      let isCurrentCellBomb = newCells[rowParam][colParam].value === 'bomb';
+      while (isCurrentCellBomb) {
+        console.log('처음부터 폭탄이다 엎드려!!!!!');
+        newCells = generateCells();
+        if (newCells[rowParam][colParam].value !== 'bomb') {
+          isCurrentCellBomb = false;
+          break;
+        }
+      }
       setIsAlive(true);
     }
-
-    const currentCell = cells[rowParam][colParam];
+    const currentCell = newCells[rowParam][colParam];
 
     if (['visible', 'flagged'].includes(currentCell.state)) {
       return;
     }
-    let newCells = cells.slice();
 
     if (currentCell.value === 'bomb') {
       // TODO: take care of bomb click!'
