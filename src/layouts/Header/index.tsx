@@ -2,8 +2,7 @@ import './Header.scss';
 
 import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
 import NumberDisplay from '../../components/NumberDisplay';
-import { CellProps, Face, GameStatus } from '../../types';
-import { generateCells } from '../../utils';
+import { Face, GameStatus } from '../../types';
 import { NO_OF_BOMBS } from '../../constants';
 
 /**
@@ -13,7 +12,6 @@ type HeaderProps = {
   face: Face;
   gameStatus: GameStatus;
   bombCounter: number;
-  setCells: React.Dispatch<SetStateAction<CellProps[][]>>;
   setFace: React.Dispatch<SetStateAction<Face>>;
   setGameStatus: React.Dispatch<SetStateAction<GameStatus>>;
   setBombCounter: React.Dispatch<SetStateAction<number>>;
@@ -23,7 +21,6 @@ const Header: React.FC<HeaderProps> = ({
   face,
   gameStatus,
   bombCounter,
-  setCells,
   setFace,
   setGameStatus,
   setBombCounter,
@@ -32,11 +29,10 @@ const Header: React.FC<HeaderProps> = ({
 
   const handleFaceClick = useCallback((): void => {
     setTime(0);
-    setCells(generateCells());
     setFace('😄');
-    setGameStatus('unstarted');
+    setGameStatus('reset');
     setBombCounter(NO_OF_BOMBS);
-  }, [setTime, setCells, setFace, setGameStatus, setBombCounter]);
+  }, [setTime, setFace, setGameStatus, setBombCounter]);
 
   useEffect(() => {
     // if game is playing
@@ -56,8 +52,8 @@ const Header: React.FC<HeaderProps> = ({
     <div className="Header">
       {/* amount of remaining mines */}
       <NumberDisplay value={bombCounter} />
-      <div className="Face">
-        <span role="img" aria-label="face" onClick={handleFaceClick}>
+      <div className="Face" onClick={handleFaceClick}>
+        <span role="img" aria-label="face">
           {face}
         </span>
       </div>

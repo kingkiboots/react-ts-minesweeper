@@ -6,4 +6,9 @@ export type CellProps = { value: CellValue; state: CellState; red?: boolean };
 
 export type Face = '😄' | '😲' | '😵' | '😎';
 
-export type GameStatus = 'unstarted' | 'started' | 'hasLost' | 'hasWon';
+export type GameStatus =
+  | 'unstarted'
+  | 'reset'
+  | 'started'
+  | 'hasLost'
+  | 'hasWon';

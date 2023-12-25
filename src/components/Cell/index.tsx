@@ -28,7 +28,10 @@ const Cell: React.FC<CellComponentProps> = ({
   const cellRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (state === 'unknown' && ['unstarted', 'started'].includes(gameStatus)) {
+    if (
+      state === 'unknown' &&
+      ['unstarted', 'reset', 'started'].includes(gameStatus)
+    ) {
       const handleMouseDown = () => {
         setFace('😲');
       };
