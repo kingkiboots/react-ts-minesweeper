@@ -1,8 +1,13 @@
-import React, { SetStateAction, useLayoutEffect, useState } from 'react';
+import React, {
+  SetStateAction,
+  useCallback,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { CellProps, Face, GameStatus } from '../../types';
 import { generateCells, openMultipleCells } from '../../utils';
 import { MAX_COLS, MAX_ROWS } from '../../constants';
-import Cell from '../../components/Cell';
+import Cell from '../Cell';
 
 /**
  * Body 프로퍼티즈
@@ -17,7 +22,6 @@ type BodyProps = {
 
 const Body: React.FC<BodyProps> = ({
   gameStatus,
-  bombCounter,
   setFace,
   setGameStatus,
   setBombCounter,
@@ -34,7 +38,6 @@ const Body: React.FC<BodyProps> = ({
     let newCells = cells.slice();
     // when starting the game
     // 시작한 단계가 아니라면
-    // if (gameStatus !== 'started') {
     if (['unstarted', 'reset'].includes(gameStatus)) {
       let isCurrentCellBomb = newCells[rowParam][colParam].value === 'bomb';
       while (isCurrentCellBomb) {
@@ -101,27 +104,49 @@ const Body: React.FC<BodyProps> = ({
     setCells(newCells);
   };
 
-  const handleCellContext =
-    (rowParam: number, colParam: number) =>
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-      e.preventDefault();
-      const _cells = cells.slice(); // copy array
-      const currentCell = cells[rowParam][colParam];
+  const handleCellContext = useCallback(
+    (currentCell: CellProps, rowParam: number, colParam: number) =>
+      (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+        e.preventDefault();
 
-      if (currentCell.state === 'visible') {
-        return;
-      } else if (currentCell.state === 'unknown') {
-        _cells[rowParam][colParam].state = 'flagged';
-        setBombCounter(bombCounter - 1);
-        if (['unstarted', 'reset'].includes(gameStatus)) {
-          setGameStatus('started');
+        if (currentCell.state === 'visible') {
+          return;
         }
-      } else {
-        _cells[rowParam][colParam].state = 'unknown';
-        setBombCounter(bombCounter + 1);
-      }
-      setCells(_cells);
-    };
+        const updateCells = (prevCells: CellProps[][]) => {
+          const _cells = prevCells.slice(); // copy array
+
+          if (currentCell.state === 'unknown') {
+            _cells[rowParam][colParam].state = 'flagged';
+            setBombCounter((prev) => prev - 1);
+            if (['unstarted', 'reset'].includes(gameStatus)) {
+              setGameStatus('started');
+            }
+            return _cells;
+          }
+          _cells[rowParam][colParam].state = 'unknown';
+          setBombCounter((prev) => prev + 1);
+          return _cells;
+        };
+        setCells(updateCells);
+      },
+    [setCells, setBombCounter, gameStatus, setGameStatus],
+  );
+
+  const showAllBombs = (): CellProps[][] => {
+    const currentCells = cells.slice();
+    return currentCells.map((row) =>
+      row.map((cell) => {
+        if (cell.value === 'bomb') {
+          return {
+            ...cell,
+            state: 'visible',
+          };
+        }
+        return cell;
+      }),
+    );
+  };
+
   const renderCells = (): React.ReactNode => {
     return cells.map((row, rowIndex) =>
       row.map((cell, colIndex) => (
@@ -136,21 +161,6 @@ const Body: React.FC<BodyProps> = ({
           setFace={setFace}
         />
       )),
-    );
-  };
-
-  const showAllBombs = (): CellProps[][] => {
-    const currentCells = cells.slice();
-    return currentCells.map((row) =>
-      row.map((cell) => {
-        if (cell.value === 'bomb') {
-          return {
-            ...cell,
-            state: 'visible',
-          };
-        }
-        return cell;
-      }),
     );
   };
 

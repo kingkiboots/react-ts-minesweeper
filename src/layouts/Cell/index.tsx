@@ -11,7 +11,12 @@ type CellComponentProps = {
   row: number;
   col: number;
   onClick(rowParam: number, colParam: number): (...args: any[]) => void;
-  onContext(rowParam: number, colParam: number): (...args: any[]) => void;
+  // onContext(rowParam: number, colParam: number): (...args: any[]) => void;
+  onContext(
+    cell: CellProps,
+    rowParam: number,
+    colParam: number,
+  ): (...args: any[]) => void;
   setFace: React.Dispatch<SetStateAction<Face>>;
 };
 
@@ -44,27 +49,28 @@ const Cell: React.FC<CellComponentProps> = ({
   }, [state, gameStatus]);
 
   const renderContent = useCallback(() => {
-    if (state === 'visible') {
-      if (value === 'bomb') {
-        return (
-          <span role="img" aria-label="bomb">
-            💣
-          </span>
-        );
-      } else if (value === 'none') {
-        return null;
-      } else {
-        return value;
-      }
-    } else if (state === 'flagged') {
+    if (state === 'unknown') {
+      return null;
+    }
+    if (state === 'flagged') {
       return (
-        <span role="img" aria-label="=flag">
+        <span role="img" aria-label="flag">
           🚩
         </span>
       );
-    } else {
+    }
+    // Finally, when the state is 'visible'
+    if (value === 'bomb') {
+      return (
+        <span role="img" aria-label="bomb">
+          💣
+        </span>
+      );
+    }
+    if (value === 'none') {
       return null;
     }
+    return value;
   }, [state, value]);
 
   return (
@@ -75,7 +81,7 @@ const Cell: React.FC<CellComponentProps> = ({
         state === 'visible' ? 'visible' : ''
       } value-${value} ${cell.red ? 'red' : ''}`}
       onClick={onClick(row, col)}
-      onContextMenu={onContext(row, col)}
+      onContextMenu={onContext(cell, row, col)}
     >
       {renderContent()}
     </div>
