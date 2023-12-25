@@ -2,7 +2,7 @@ import './Header.scss';
 
 import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
 import NumberDisplay from '../../components/NumberDisplay';
-import { Cell, Face, GameStatus } from '../../types';
+import { CellProps, Face, GameStatus } from '../../types';
 import { generateCells } from '../../utils';
 import { NO_OF_BOMBS } from '../../constants';
 
@@ -10,61 +10,33 @@ import { NO_OF_BOMBS } from '../../constants';
  * Header 프로퍼티즈
  */
 type HeaderProps = {
-  bodyRef: React.RefObject<HTMLDivElement>;
+  face: Face;
   gameStatus: GameStatus;
   bombCounter: number;
-  setCells: React.Dispatch<SetStateAction<Cell[][]>>;
+  setCells: React.Dispatch<SetStateAction<CellProps[][]>>;
+  setFace: React.Dispatch<SetStateAction<Face>>;
   setGameStatus: React.Dispatch<SetStateAction<GameStatus>>;
   setBombCounter: React.Dispatch<SetStateAction<number>>;
 };
 
 const Header: React.FC<HeaderProps> = ({
-  bodyRef,
+  face,
   gameStatus,
   bombCounter,
   setCells,
+  setFace,
   setGameStatus,
   setBombCounter,
 }) => {
-  const [face, setFace] = useState<Face>('😄'); // 아직
   const [time, setTime] = useState<number>(0);
 
   const handleFaceClick = useCallback((): void => {
     setTime(0);
     setCells(generateCells());
+    setFace('😄');
     setGameStatus('unstarted');
     setBombCounter(NO_OF_BOMBS);
-  }, [setTime, setCells, setGameStatus, setBombCounter]);
-
-  useEffect(() => {
-    if (gameStatus === 'hasLost') {
-      setFace('😵');
-      return;
-    }
-    if (gameStatus === 'hasWon') {
-      setFace('😎');
-      return;
-    }
-  }, [gameStatus]);
-
-  useEffect(() => {
-    const handleMouseDown = () => {
-      setFace('😲');
-    };
-    const handleMouseUp = () => {
-      setFace('😄');
-    };
-
-    const body = bodyRef.current;
-
-    body?.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      body?.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [bodyRef]);
+  }, [setTime, setCells, setFace, setGameStatus, setBombCounter]);
 
   useEffect(() => {
     // if game is playing

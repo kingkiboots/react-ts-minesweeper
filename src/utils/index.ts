@@ -1,19 +1,19 @@
 import { MAX_COLS, MAX_ROWS, NO_OF_BOMBS } from '../constants';
-import { Cell } from '../types';
+import { CellProps } from '../types';
 
 const grabAllAdjacentCells = (
-  cells: Cell[][],
+  cells: CellProps[][],
   rowParam: number,
   colParam: number,
 ): {
-  topLeftCell: Cell | null;
-  topCell: Cell | null;
-  topRightCell: Cell | null;
-  leftCell: Cell | null;
-  rightCell: Cell | null;
-  bottomLeftCell: Cell | null;
-  bottomCell: Cell | null;
-  bottomRightCell: Cell | null;
+  topLeftCell: CellProps | null;
+  topCell: CellProps | null;
+  topRightCell: CellProps | null;
+  leftCell: CellProps | null;
+  rightCell: CellProps | null;
+  bottomLeftCell: CellProps | null;
+  bottomCell: CellProps | null;
+  bottomRightCell: CellProps | null;
 } => {
   const topLeftCell =
     rowParam > 0 && colParam > 0 ? cells[rowParam - 1][colParam - 1] : null;
@@ -47,8 +47,8 @@ const grabAllAdjacentCells = (
   };
 };
 
-export const generateCells = (): Cell[][] => {
-  let cells: Cell[][] = [];
+export const generateCells = (): CellProps[][] => {
+  let cells: CellProps[][] = [];
 
   // generating all cells
   for (let row = 0; row < MAX_ROWS; row++) {
@@ -125,10 +125,10 @@ export const generateCells = (): Cell[][] => {
 };
 
 export const openMultipleCells = (
-  cells: Cell[][],
+  cells: CellProps[][],
   rowParam: number,
   colParam: number,
-): Cell[][] => {
+): CellProps[][] => {
   const currentCell = cells[rowParam][colParam];
 
   if (currentCell.state === 'visible' || currentCell.state === 'flagged') {

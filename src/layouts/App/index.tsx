@@ -1,23 +1,26 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import './App.scss';
 import { generateCells, openMultipleCells } from '../../utils';
-import Button from '../../components/Button';
+import Cell from '../../components/Cell';
 
-import { Cell, GameStatus } from '../../types';
+import { CellProps, Face, GameStatus } from '../../types';
 import { MAX_COLS, MAX_ROWS, NO_OF_BOMBS } from '../../constants';
 import Header from '../Header';
 
 const App: React.FC = () => {
-  const [cells, setCells] = useState<Cell[][]>(generateCells());
+  const [cells, setCells] = useState<CellProps[][]>(generateCells());
+  const [face, setFace] = useState<Face>('😄');
   const [gameStatus, setGameStatus] = useState<GameStatus>('unstarted');
   const [bombCounter, setBombCounter] = useState<number>(NO_OF_BOMBS);
-
-  const bodyRef = useRef<HTMLDivElement>(null);
 
   console.log('cells', cells);
 
   const handleCellClick = (rowParam: number, colParam: number) => (): void => {
+    if (['hasLost', 'hasWon'].includes(gameStatus)) {
+      return;
+    }
+
     let newCells = cells.slice();
     // when starting the game
     // 시작한 단계가 아니라면
@@ -34,6 +37,7 @@ const App: React.FC = () => {
       }
       setGameStatus('started');
     }
+
     const currentCell = newCells[rowParam][colParam];
 
     if (['visible', 'flagged'].includes(currentCell.state)) {
@@ -112,19 +116,21 @@ const App: React.FC = () => {
   const renderCells = (): React.ReactNode => {
     return cells.map((row, rowIndex) =>
       row.map((cell, colIndex) => (
-        <Button
+        <Cell
           key={`${rowIndex}-${colIndex}`}
           cell={cell}
+          gameStatus={gameStatus}
           onClick={handleCellClick}
           onContext={handleCellContext}
           row={rowIndex}
           col={colIndex}
+          setFace={setFace}
         />
       )),
     );
   };
 
-  const showAllBombs = (): Cell[][] => {
+  const showAllBombs = (): CellProps[][] => {
     const currentCells = cells.slice();
     return currentCells.map((row) =>
       row.map((cell) => {
@@ -139,19 +145,41 @@ const App: React.FC = () => {
     );
   };
 
+  useEffect(() => {
+    if (['unstarted', 'started'].includes(gameStatus)) {
+      const handleMouseUp = () => {
+        setFace('😄');
+      };
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [gameStatus]);
+
+  useEffect(() => {
+    if (gameStatus === 'hasLost') {
+      setFace('😵');
+      return;
+    }
+    if (gameStatus === 'hasWon') {
+      setFace('😎');
+      return;
+    }
+  }, [gameStatus]);
+
   return (
     <div className="App">
       <Header
-        bodyRef={bodyRef}
+        face={face}
         gameStatus={gameStatus}
         bombCounter={bombCounter}
         setCells={setCells}
+        setFace={setFace}
         setGameStatus={setGameStatus}
         setBombCounter={setBombCounter}
       />
-      <div ref={bodyRef} className="Body">
-        {renderCells()}
-      </div>
+      <div className="Body">{renderCells()}</div>
     </div>
   );
 };

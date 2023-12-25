@@ -1,28 +1,46 @@
-import React from 'react';
+import React, { SetStateAction, useCallback, useEffect, useRef } from 'react';
 import './Button.scss';
-import { Cell } from '../../types';
+import { CellProps, Face, GameStatus } from '../../types';
 
 /**
- * Button 프로퍼티즈
+ * Cell 프로퍼티즈
  */
-type ButtonProps = {
-  cell: Cell;
+type CellComponentProps = {
+  cell: CellProps;
+  gameStatus: GameStatus;
   row: number;
   col: number;
   onClick(rowParam: number, colParam: number): (...args: any[]) => void;
   onContext(rowParam: number, colParam: number): (...args: any[]) => void;
+  setFace: React.Dispatch<SetStateAction<Face>>;
 };
 
-const Button: React.FC<ButtonProps> = ({
+const Cell: React.FC<CellComponentProps> = ({
   cell,
+  gameStatus,
   col,
   row,
   onClick,
   onContext,
+  setFace,
 }) => {
   const { state, value } = cell;
+  const cellRef = useRef<HTMLDivElement>(null);
 
-  const renderContent = () => {
+  useEffect(() => {
+    if (state === 'unknown' && ['unstarted', 'started'].includes(gameStatus)) {
+      const handleMouseDown = () => {
+        setFace('😲');
+      };
+      const cell = cellRef.current;
+      cell?.addEventListener('mousedown', handleMouseDown);
+      return () => {
+        cell?.removeEventListener('mousedown', handleMouseDown);
+      };
+    }
+  }, [state, gameStatus]);
+
+  const renderContent = useCallback(() => {
     if (state === 'visible') {
       if (value === 'bomb') {
         return (
@@ -44,10 +62,12 @@ const Button: React.FC<ButtonProps> = ({
     } else {
       return null;
     }
-  };
+  }, [state, value]);
 
   return (
     <div
+      ref={cellRef}
+      draggable={false}
       className={`Button ${
         state === 'visible' ? 'visible' : ''
       } value-${value} ${cell.red ? 'red' : ''}`}
@@ -59,4 +79,4 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
-export default Button;
+export default Cell;
