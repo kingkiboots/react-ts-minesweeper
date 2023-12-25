@@ -5,3 +5,5 @@ export type CellState = 'unknown' | 'visible' | 'flagged';
 export type Cell = { value: CellValue; state: CellState; red?: boolean };
 
 export type Face = '😄' | '😲' | '😵' | '😎';
+
+export type GameStatus = 'unstarted' | 'started' | 'hasLost' | 'hasWon';

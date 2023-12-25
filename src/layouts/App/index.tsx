@@ -1,60 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 import './App.scss';
-import NumberDisplay from '../NumberDisplay';
 import { generateCells, openMultipleCells } from '../../utils';
-import Button from '../Button';
+import Button from '../../components/Button';
 
-import { Cell, Face } from '../../types';
+import { Cell, GameStatus } from '../../types';
 import { MAX_COLS, MAX_ROWS, NO_OF_BOMBS } from '../../constants';
+import Header from '../Header';
 
 const App: React.FC = () => {
   const [cells, setCells] = useState<Cell[][]>(generateCells());
-  const [face, setFace] = useState<Face>('😄');
-  const [time, setTime] = useState<number>(0);
-  const [isAlive, setIsAlive] = useState<boolean>(false);
-  const [hasLost, setHasLost] = useState<boolean>(false);
-  const [hasWon, setHasWon] = useState<boolean>(false);
+  const [gameStatus, setGameStatus] = useState<GameStatus>('unstarted');
   const [bombCounter, setBombCounter] = useState<number>(NO_OF_BOMBS);
 
   const bodyRef = useRef<HTMLDivElement>(null);
 
   console.log('cells', cells);
 
-  useEffect(() => {
-    const handleMouseDown = () => {
-      setFace('😲');
-    };
-    const handleMouseUp = () => {
-      setFace('😄');
-    };
-    bodyRef.current?.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      bodyRef.current?.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
-
-  useEffect(() => {
-    // if game is playing
-    if (isAlive && time < 999) {
-      // the timer starts coming up
-      const timer = setInterval(() => {
-        setTime(time + 1);
-      }, 1000);
-      // on unmount
-      return () => {
-        clearInterval(timer); // 오 이게 되네?
-      };
-    }
-  }, [isAlive, time]);
-
   const handleCellClick = (rowParam: number, colParam: number) => (): void => {
     let newCells = cells.slice();
-    // start the game
-    if (!isAlive) {
+    // when starting the game
+    // 시작한 단계가 아니라면
+    // if (gameStatus !== 'started') {
+    if (gameStatus === 'unstarted') {
       let isCurrentCellBomb = newCells[rowParam][colParam].value === 'bomb';
       while (isCurrentCellBomb) {
         console.log('처음부터 폭탄이다 엎드려!!!!!');
@@ -64,7 +32,7 @@ const App: React.FC = () => {
           break;
         }
       }
-      setIsAlive(true);
+      setGameStatus('started');
     }
     const currentCell = newCells[rowParam][colParam];
 
@@ -74,7 +42,7 @@ const App: React.FC = () => {
 
     if (currentCell.value === 'bomb') {
       // TODO: take care of bomb click!'
-      setHasLost(true);
+      setGameStatus('hasLost');
       newCells[rowParam][colParam].red = true;
       newCells = showAllBombs();
       setCells(newCells);
@@ -113,26 +81,12 @@ const App: React.FC = () => {
           }
         }),
       );
-      setHasWon(true);
+      setGameStatus('hasWon');
+      setBombCounter(0);
     }
 
     setCells(newCells);
   };
-
-  useEffect(() => {
-    if (hasLost) {
-      setFace('😵');
-      setIsAlive(false);
-      // TODO: show all bombs
-    }
-  }, [hasLost]);
-
-  useEffect(() => {
-    if (hasWon) {
-      setFace('😎');
-      setIsAlive(false);
-    }
-  }, [hasWon]);
 
   const handleCellContext =
     (rowParam: number, colParam: number) =>
@@ -146,21 +100,14 @@ const App: React.FC = () => {
       } else if (currentCell.state === 'unknown') {
         _cells[rowParam][colParam].state = 'flagged';
         setBombCounter(bombCounter - 1);
-        if (!isAlive) setIsAlive(true);
+        // if (!isAlive) setIsAlive(true);
+        if (gameStatus === 'unstarted') setGameStatus('started');
       } else {
         _cells[rowParam][colParam].state = 'unknown';
         setBombCounter(bombCounter + 1);
       }
       setCells(_cells);
     };
-
-  const handleFaceClick = (): void => {
-    setIsAlive(false);
-    setTime(0);
-    setCells(generateCells());
-    setHasLost(false);
-    setHasWon(false);
-  };
 
   const renderCells = (): React.ReactNode => {
     return cells.map((row, rowIndex) =>
@@ -194,17 +141,14 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <div className="Header">
-        {/* amount of remaining mines */}
-        <NumberDisplay value={bombCounter} />
-        <div className="Face">
-          <span role="img" aria-label="face" onClick={handleFaceClick}>
-            {face}
-          </span>
-        </div>
-        {/* time */}
-        <NumberDisplay value={time} />
-      </div>
+      <Header
+        bodyRef={bodyRef}
+        gameStatus={gameStatus}
+        bombCounter={bombCounter}
+        setCells={setCells}
+        setGameStatus={setGameStatus}
+        setBombCounter={setBombCounter}
+      />
       <div ref={bodyRef} className="Body">
         {renderCells()}
       </div>
