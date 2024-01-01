@@ -1,62 +1,79 @@
-import React from 'react';
 import './Button.scss';
-import { Cell } from '../../types';
+
+import React, {
+  ReactNode,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
 /**
  * Button 프로퍼티즈
  */
 type ButtonProps = {
-  cell: Cell;
-  row: number;
-  col: number;
-  onClick(rowParam: number, colParam: number): (...args: any[]) => void;
-  onContext(rowParam: number, colParam: number): (...args: any[]) => void;
+  className: string;
+  onClick: (...args: any[]) => void;
+  onContextMenu?: (...args: any[]) => void;
+  disabled?: boolean;
+  children: ReactNode;
 };
+// forwardref 실습
+const Button = React.forwardRef<HTMLDivElement, ButtonProps>(
+  ({ className, onClick, onContextMenu, disabled, children }, ref) => {
+    const [isActive, setIsButtonActive] = useState<boolean>(false);
 
-const Button: React.FC<ButtonProps> = ({
-  cell,
-  col,
-  row,
-  onClick,
-  onContext,
-}) => {
-  const { state, value } = cell;
+    const buttonRef = useRef<HTMLDivElement>(null);
+    useImperativeHandle(ref, () => buttonRef.current as HTMLDivElement);
 
-  const renderContent = () => {
-    if (state === 'visible') {
-      if (value === 'bomb') {
-        return (
-          <span role="img" aria-label="bomb">
-            💣
-          </span>
-        );
-      } else if (value === 'none') {
-        return null;
-      } else {
-        return value;
+    console.log('홍냥냥냥');
+
+    useEffect(() => {
+      const button = buttonRef.current;
+      if (button && !disabled) {
+        const handleMouseDown = (e: MouseEvent) => {
+          if (e.button === 2) return;
+          setIsButtonActive(true);
+        };
+        const handleMouseUp = (e: MouseEvent) => {
+          if (e.button === 2) return;
+          setIsButtonActive(false);
+        };
+
+        button.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => {
+          button.removeEventListener('mousedown', handleMouseDown);
+          window.removeEventListener('mouseup', handleMouseUp);
+        };
       }
-    } else if (state === 'flagged') {
-      return (
-        <span role="img" aria-label="=flag">
-          🚩
-        </span>
-      );
-    } else {
-      return null;
-    }
-  };
+    }, [disabled]);
 
-  return (
-    <div
-      className={`Button ${
-        state === 'visible' ? 'visible' : ''
-      } value-${value} ${cell.red ? 'red' : ''}`}
-      onClick={onClick(row, col)}
-      onContextMenu={onContext(row, col)}
-    >
-      {renderContent()}
-    </div>
-  );
-};
+    // useEffect(() => {
+    //   console.log('비긴어게인');
+    // }, [children]);
 
-export default Button;
+    useEffect(() => {
+      console.log('onClick');
+    }, [onClick]);
+
+    useEffect(() => {
+      console.log('onContextMenu');
+    }, [onContextMenu]);
+
+    return (
+      <div
+        ref={buttonRef}
+        draggable={false}
+        className={`Button${isActive ? ' active' : ''} ${className}`}
+        onClick={onClick}
+        onContextMenu={onContextMenu}
+        aria-disabled={disabled ?? false}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+Button.displayName = 'ButtonComponent';
+export default React.memo(Button);

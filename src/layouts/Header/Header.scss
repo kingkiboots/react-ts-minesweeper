@@ -1,0 +1,22 @@
+@import '/src/styles/index.scss';
+
+.Header {
+  @include borders(#7b7b7b, white);
+  background-color: #c0c0c0;
+  padding: 10px 12px; // 상하 : 10px, 좌우: 12px
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Face {
+  @include borders; // 만약 그냥 디폴트 값 지정해놓고 그걸로 쓰고 싶으면 인자 안주면 됨
+  // @include buttons;
+  width: 52px;
+  height: 52px;
+  font-size: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
