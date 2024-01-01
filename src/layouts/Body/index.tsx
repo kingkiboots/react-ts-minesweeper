@@ -64,7 +64,7 @@ const Body: React.FC<BodyProps> = ({
         newCells = showAllBombs();
         setCells(newCells);
       } else if (currentCell.value === 'none') {
-        // TODO:
+        // TODO: 만약 value가 1이고 그 주변의 flag 수가 같다면 그 주변의 cell 들이 flag 된거 말고 열림
         newCells = openMultipleCells(newCells, rowParam, colParam);
       } else {
         newCells[rowParam][colParam].state = 'visible';

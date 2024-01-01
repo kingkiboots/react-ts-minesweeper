@@ -32,6 +32,7 @@ const Cell: React.FC<CellComponentProps> = ({
 }) => {
   const { state, value } = cell;
   const cellRef = useRef<HTMLDivElement>(null);
+  const isVisible = state === 'visible';
 
   useEffect(() => {
     if (
@@ -88,9 +89,9 @@ const Cell: React.FC<CellComponentProps> = ({
   return (
     <Button
       ref={cellRef}
-      className={`Cell ${state === 'visible' ? 'visible' : ''} value-${value} ${
-        cell.red ? 'red' : ''
-      }`}
+      className={`Cell ${row}_${col} ${state}${
+        isVisible ? ` value-${value}` : ''
+      }${cell.red ? ' red' : ''}`}
       onClick={memoizedOnClick}
       onContextMenu={memoizedOnContext}
       disabled={state === 'flagged'}
