@@ -13,6 +13,17 @@ const App: React.FC = () => {
   const [bombCounter, setBombCounter] = useState<number>(NO_OF_BOMBS);
 
   useEffect(() => {
+    const handlePressSpace = (e: KeyboardEvent) => {
+      if (e.key !== ' ') return;
+      setGameStatus('reset');
+    };
+    window.addEventListener('keydown', handlePressSpace);
+    return () => {
+      window.removeEventListener('keydown', handlePressSpace);
+    };
+  }, []);
+
+  useEffect(() => {
     if (['unstarted', 'reset', 'started'].includes(gameStatus)) {
       const handleMouseUp = () => {
         setFace('😄');

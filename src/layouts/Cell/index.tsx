@@ -94,7 +94,7 @@ const Cell: React.FC<CellComponentProps> = ({
       }${cell.red ? ' red' : ''}`}
       onClick={memoizedOnClick}
       onContextMenu={memoizedOnContext}
-      disabled={state === 'flagged'}
+      disabled={state === 'flagged' || gameStatus === 'hasLost'}
     >
       {renderContent()}
     </Button>
