@@ -4,6 +4,7 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
@@ -43,11 +44,8 @@ const Header: React.FC<HeaderProps> = ({
   const [time, setTime] = useState<number>(0);
 
   const handleFaceClick = useCallback((): void => {
-    setTime(0);
-    setFace('😄');
     setGameStatus('reset');
-    setBombCounter(NO_OF_BOMBS);
-  }, [setTime, setFace, setGameStatus, setBombCounter]);
+  }, [setGameStatus]);
 
   // children을 받는 컴포넌트는 메모이징을 해도 reactElement를 childre으로 주면 리렌더가 된다.
   // 그러므로 이렇게 useMemo를 통해서 하자
@@ -55,6 +53,14 @@ const Header: React.FC<HeaderProps> = ({
     () => <FaceComopnent face={face} />,
     [face],
   );
+
+  useLayoutEffect(() => {
+    if (gameStatus === 'reset') {
+      setTime(0);
+      setFace('😄');
+      setBombCounter(NO_OF_BOMBS);
+    }
+  }, [gameStatus]);
 
   useEffect(() => {
     // if game is playing
