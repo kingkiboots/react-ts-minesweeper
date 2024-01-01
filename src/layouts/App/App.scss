@@ -4,21 +4,13 @@
   @include borders(white, #999); // sass의 이점. 맨 위에다가 해주길
   background-color: #c2c2c2;
   padding: 16px;
+  user-select: none;
   //   border-width: 4px;
   //   border-style: solid;
   //   border-right-color: #999;
   //   border-bottom-color: #999;
   //   border-left-color: white;
   //   border-top-color: white;
-}
-
-.Header {
-  @include borders(#7b7b7b, white);
-  background-color: #c0c0c0;
-  padding: 10px 12px; // 상하 : 10px, 좌우: 12px
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .Body {
@@ -28,16 +20,4 @@
   display: grid;
   grid-template-rows: repeat(9, 1fr); // 9개의 row, 그리고 모두가 같은 크기
   grid-template-columns: repeat(9, 1fr); // 9개의 row, 그리고 모두가 같은 크기
-}
-
-.Face {
-  @include borders; // 만약 그냥 디폴트 값 지정해놓고 그걸로 쓰고 싶으면 인자 안주면 됨
-  @include buttons;
-  width: 52px;
-  height: 52px;
-  font-size: 35px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
 }
