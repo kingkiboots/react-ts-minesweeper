@@ -1,8 +1,8 @@
 @import '/src/styles/index.scss';
 
-.Button {
+.Cell {
   @include borders;
-  @include buttons;
+  // @include buttons;
   width: 30px;
   height: 30px;
   display: flex;

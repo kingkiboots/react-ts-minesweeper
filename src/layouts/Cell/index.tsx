@@ -1,6 +1,7 @@
 import React, { SetStateAction, useCallback, useEffect, useRef } from 'react';
-import './Button.scss';
+import './Cell.scss';
 import { CellProps, Face, GameStatus } from '../../types';
+import Button from '../../components/Button';
 
 /**
  * Cell 프로퍼티즈
@@ -34,10 +35,12 @@ const Cell: React.FC<CellComponentProps> = ({
 
   useEffect(() => {
     if (
-      state === 'unknown' &&
+      state !== 'visible' &&
       ['unstarted', 'reset', 'started'].includes(gameStatus)
     ) {
       const handleMouseDown = () => {
+        if (state === 'flagged') return;
+
         setFace('😲');
       };
       const cell = cellRef.current;
@@ -73,18 +76,27 @@ const Cell: React.FC<CellComponentProps> = ({
     return value;
   }, [state, value]);
 
+  const memoizedOnClick = useCallback(onClick(row, col), [onClick, row, col]);
+
+  const memoizedOnContext = useCallback(onContext(cell, row, col), [
+    onContext,
+    cell,
+    row,
+    col,
+  ]);
+
   return (
-    <div
+    <Button
       ref={cellRef}
-      draggable={false}
-      className={`Button ${
-        state === 'visible' ? 'visible' : ''
-      } value-${value} ${cell.red ? 'red' : ''}`}
-      onClick={onClick(row, col)}
-      onContextMenu={onContext(cell, row, col)}
+      className={`Cell ${state === 'visible' ? 'visible' : ''} value-${value} ${
+        cell.red ? 'red' : ''
+      }`}
+      onClick={memoizedOnClick}
+      onContextMenu={memoizedOnContext}
+      disabled={state === 'flagged'}
     >
       {renderContent()}
-    </div>
+    </Button>
   );
 };
 

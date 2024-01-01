@@ -1,9 +1,16 @@
 import './Header.scss';
 
-import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, {
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import NumberDisplay from '../../components/NumberDisplay';
 import { Face, GameStatus } from '../../types';
 import { NO_OF_BOMBS } from '../../constants';
+import Button from '../../components/Button';
 
 /**
  * Header 프로퍼티즈
@@ -15,6 +22,14 @@ type HeaderProps = {
   setFace: React.Dispatch<SetStateAction<Face>>;
   setGameStatus: React.Dispatch<SetStateAction<GameStatus>>;
   setBombCounter: React.Dispatch<SetStateAction<number>>;
+};
+
+const FaceComopnent = ({ face }: { face: Face }) => {
+  return (
+    <span role="img" aria-label="face">
+      {face}
+    </span>
+  );
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -34,6 +49,13 @@ const Header: React.FC<HeaderProps> = ({
     setBombCounter(NO_OF_BOMBS);
   }, [setTime, setFace, setGameStatus, setBombCounter]);
 
+  // children을 받는 컴포넌트는 메모이징을 해도 reactElement를 childre으로 주면 리렌더가 된다.
+  // 그러므로 이렇게 useMemo를 통해서 하자
+  const memoizedFaceComponent = useMemo(
+    () => <FaceComopnent face={face} />,
+    [face],
+  );
+
   useEffect(() => {
     // if game is playing
     if (gameStatus === 'started' && time < 999) {
@@ -52,11 +74,9 @@ const Header: React.FC<HeaderProps> = ({
     <div className="Header">
       {/* amount of remaining mines */}
       <NumberDisplay value={bombCounter} />
-      <div className="Face" onClick={handleFaceClick}>
-        <span role="img" aria-label="face">
-          {face}
-        </span>
-      </div>
+      <Button className="Face" onClick={handleFaceClick}>
+        {memoizedFaceComponent}
+      </Button>
       {/* time */}
       <NumberDisplay value={time} />
     </div>

@@ -9,7 +9,8 @@
 }
 
 @mixin buttons {
-  &:active {
+  // &:active {
+  &.active {
     // if this is active is true. 즉 클릭 중인 상태
     border-right-color: white;
     border-bottom-color: white;

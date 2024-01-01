@@ -4,6 +4,7 @@
   @include borders(white, #999); // sass의 이점. 맨 위에다가 해주길
   background-color: #c2c2c2;
   padding: 16px;
+  user-select: none;
   //   border-width: 4px;
   //   border-style: solid;
   //   border-right-color: #999;
