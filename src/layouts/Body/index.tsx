@@ -15,6 +15,7 @@ import Cell from '../Cell';
 type BodyProps = {
   gameStatus: GameStatus;
   bombCounter: number;
+  noOfBombs: number;
   setFace: React.Dispatch<SetStateAction<Face>>;
   setGameStatus: React.Dispatch<SetStateAction<GameStatus>>;
   setBombCounter: React.Dispatch<SetStateAction<number>>;
@@ -22,13 +23,14 @@ type BodyProps = {
 
 const Body: React.FC<BodyProps> = ({
   gameStatus,
+  noOfBombs,
   setFace,
   setGameStatus,
   setBombCounter,
 }) => {
-  const [cells, setCells] = useState<CellProps[][]>(generateCells());
+  const [cells, setCells] = useState<CellProps[][]>(generateCells(noOfBombs));
 
-  console.log('cells', cells);
+  // console.log('cells', cells);
 
   const handleCellClick = useCallback(
     (rowParam: number, colParam: number) => (): void => {
@@ -42,7 +44,7 @@ const Body: React.FC<BodyProps> = ({
       if (['unstarted', 'reset'].includes(gameStatus)) {
         let isCurrentCellBomb = newCells[rowParam][colParam].value === 'bomb';
         while (isCurrentCellBomb) {
-          newCells = generateCells();
+          newCells = generateCells(noOfBombs);
           if (newCells[rowParam][colParam].value !== 'bomb') {
             isCurrentCellBomb = false;
             break;
@@ -104,7 +106,7 @@ const Body: React.FC<BodyProps> = ({
 
       setCells(newCells);
     },
-    [gameStatus, cells, setGameStatus, setCells, setBombCounter],
+    [gameStatus, noOfBombs, cells, setGameStatus, setCells, setBombCounter],
   );
 
   const handleCellContext = useCallback(
@@ -168,8 +170,8 @@ const Body: React.FC<BodyProps> = ({
   };
 
   useLayoutEffect(() => {
-    if (gameStatus === 'reset') setCells(generateCells());
-  }, [gameStatus]);
+    if (gameStatus === 'reset') setCells(generateCells(noOfBombs));
+  }, [gameStatus, noOfBombs]);
 
   return <div className="Body">{renderCells()}</div>;
 };
