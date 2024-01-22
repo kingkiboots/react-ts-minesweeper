@@ -1,4 +1,4 @@
-import { MAX_COLS, MAX_ROWS, NO_OF_BOMBS } from '../constants';
+import { MAX_COLS, MAX_ROWS } from '../constants';
 import { CellProps } from '../types';
 
 const grabAllAdjacentCells = (
@@ -47,7 +47,7 @@ const grabAllAdjacentCells = (
   };
 };
 
-export const generateCells = (): CellProps[][] => {
+export const generateCells = (noOfBombs: number): CellProps[][] => {
   let cells: CellProps[][] = [];
 
   // generating all cells
@@ -64,7 +64,7 @@ export const generateCells = (): CellProps[][] => {
 
   // randomly put 10 bombs
   let bombsPlaced = 0;
-  while (bombsPlaced < NO_OF_BOMBS) {
+  while (bombsPlaced < noOfBombs) {
     const randomRow = Math.floor(Math.random() * MAX_ROWS); // 1-8
     const randomCol = Math.floor(Math.random() * MAX_COLS); // 1-8
 

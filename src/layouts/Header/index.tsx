@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import NumberDisplay from '../../components/NumberDisplay';
 import { Face, GameStatus } from '../../types';
-import { NO_OF_BOMBS } from '../../constants';
 import Button from '../../components/Button';
 
 /**
@@ -20,6 +19,7 @@ type HeaderProps = {
   face: Face;
   gameStatus: GameStatus;
   bombCounter: number;
+  noOfBombs: number;
   setFace: React.Dispatch<SetStateAction<Face>>;
   setGameStatus: React.Dispatch<SetStateAction<GameStatus>>;
   setBombCounter: React.Dispatch<SetStateAction<number>>;
@@ -37,6 +37,7 @@ const Header: React.FC<HeaderProps> = ({
   face,
   gameStatus,
   bombCounter,
+  noOfBombs,
   setFace,
   setGameStatus,
   setBombCounter,
@@ -58,9 +59,9 @@ const Header: React.FC<HeaderProps> = ({
     if (gameStatus === 'reset') {
       setTime(0);
       setFace('😄');
-      setBombCounter(NO_OF_BOMBS);
+      setBombCounter(noOfBombs);
     }
-  }, [gameStatus]);
+  }, [gameStatus, noOfBombs]);
 
   useEffect(() => {
     // if game is playing
