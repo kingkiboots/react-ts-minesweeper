@@ -12,3 +12,8 @@ export type GameStatus =
   | 'started'
   | 'hasLost'
   | 'hasWon';
+
+  export type OnChangeEvent = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> & {
+    target: { value: string | boolean; listIndex?: number };
+  };
+  
