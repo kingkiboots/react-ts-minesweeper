@@ -1,68 +1,41 @@
-import React, { useState, useEffect } from 'react';
-
-import './App.scss';
-
-import { Face, GameStatus } from '../../types';
+import React, { useState } from 'react';
+import Main from '../Main';
 import { NO_OF_BOMBS } from '../../constants';
-import Header from '../Header';
-import Body from '../Body';
+import { OnChangeEvent } from '../../types';
 
-const App: React.FC = () => {
-  const [face, setFace] = useState<Face>('😄');
-  const [gameStatus, setGameStatus] = useState<GameStatus>('unstarted');
-  const [bombCounter, setBombCounter] = useState<number>(NO_OF_BOMBS);
+const App = () => {
+  // game setting 을 컨텍스트로 빼자.
+  const [numberOfBombs, setNumberOfBombs] = useState<number>(NO_OF_BOMBS);
 
-  useEffect(() => {
-    const handlePressSpace = (e: KeyboardEvent) => {
-      if (e.key !== ' ') return;
-      setGameStatus('reset');
-    };
-    window.addEventListener('keydown', handlePressSpace);
-    return () => {
-      window.removeEventListener('keydown', handlePressSpace);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (['unstarted', 'reset', 'started'].includes(gameStatus)) {
-      const handleMouseUp = () => {
-        setFace('😄');
-      };
-      window.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        window.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [gameStatus]);
-
-  useEffect(() => {
-    if (gameStatus === 'hasLost') {
-      setFace('😵');
-      return;
-    }
-    if (gameStatus === 'hasWon') {
-      setFace('😎');
-      return;
-    }
-  }, [gameStatus]);
+  const handleChange = (e: OnChangeEvent) => {
+    const { value } = e.target;
+    setNumberOfBombs(parseInt(value));
+  };
 
   return (
-    <div className="App">
-      <Header
-        face={face}
-        gameStatus={gameStatus}
-        bombCounter={bombCounter}
-        setFace={setFace}
-        setGameStatus={setGameStatus}
-        setBombCounter={setBombCounter}
-      />
-      <Body
-        gameStatus={gameStatus}
-        bombCounter={bombCounter}
-        setFace={setFace}
-        setGameStatus={setGameStatus}
-        setBombCounter={setBombCounter}
-      />
+    <div className="container">
+      <div className="Level">
+        <label>지뢰개수 선택 : </label>
+        <select
+          value={numberOfBombs}
+          name="numberOfBombs"
+          onChange={handleChange}
+        >
+          {Array(NO_OF_BOMBS)
+            .fill(null)
+            .map((_, idx) => {
+              const value = idx + 1;
+              return (
+                <option key={`selectNumberOfBombs${value}`} value={value}>
+                  {value}
+                </option>
+              );
+            })}
+        </select>
+      </div>
+      <div className="App">
+        <Main numberOfBombs={numberOfBombs} />
+      </div>
     </div>
   );
 };
