@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Main from '../Main';
-import { NO_OF_BOMBS } from '../../constants';
+import { NO_OF_BOMBS, MIN_NO_OF_BOMBS } from '../../constants';
 import { OnChangeEvent } from '../../types';
 
 const App = () => {
@@ -21,10 +21,10 @@ const App = () => {
           name="numberOfBombs"
           onChange={handleChange}
         >
-          {Array(NO_OF_BOMBS)
+          {Array(NO_OF_BOMBS - MIN_NO_OF_BOMBS + 1)
             .fill(null)
             .map((_, idx) => {
-              const value = idx + 1;
+              const value = idx + MIN_NO_OF_BOMBS;
               return (
                 <option key={`selectNumberOfBombs${value}`} value={value}>
                   {value}
