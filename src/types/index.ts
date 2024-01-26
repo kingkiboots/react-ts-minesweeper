@@ -6,7 +6,10 @@ export type CellProps = { value: CellValue; state: CellState; red?: boolean };
 
 export type Face = '😄' | '😲' | '😵' | '😎';
 
+type GameLevelLabel = '초급' | '중급' | '고급';
+
 export type GameLevel = {
+  label: GameLevelLabel;
   maxRows: number;
   maxCols: number;
   noOfBombs: number;
