@@ -6,6 +6,12 @@ export type CellProps = { value: CellValue; state: CellState; red?: boolean };
 
 export type Face = '😄' | '😲' | '😵' | '😎';
 
+export type GameLevel = {
+  maxRows: number;
+  maxCols: number;
+  noOfBombs: number;
+};
+
 export type GameStatus =
   | 'unstarted'
   | 'reset'
@@ -13,7 +19,8 @@ export type GameStatus =
   | 'hasLost'
   | 'hasWon';
 
-  export type OnChangeEvent = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> & {
-    target: { value: string | boolean; listIndex?: number };
-  };
-  
+export type OnChangeEvent = React.ChangeEvent<
+  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+> & {
+  target: { value: string | boolean; listIndex?: number };
+};

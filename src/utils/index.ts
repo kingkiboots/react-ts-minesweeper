@@ -1,10 +1,11 @@
-import { MAX_COLS, MAX_ROWS } from '../constants';
-import { CellProps } from '../types';
+import { CellProps, GameLevel } from '../types';
 
 const grabAllAdjacentCells = (
   cells: CellProps[][],
   rowParam: number,
   colParam: number,
+  maxRows: number,
+  maxCols: number,
 ): {
   topLeftCell: CellProps | null;
   topCell: CellProps | null;
@@ -19,20 +20,20 @@ const grabAllAdjacentCells = (
     rowParam > 0 && colParam > 0 ? cells[rowParam - 1][colParam - 1] : null;
   const topCell = rowParam > 0 ? cells[rowParam - 1][colParam] : null;
   const topRightCell =
-    rowParam > 0 && colParam < MAX_COLS - 1
+    rowParam > 0 && colParam < maxCols - 1
       ? cells[rowParam - 1][colParam + 1]
       : null;
   const leftCell = colParam > 0 ? cells[rowParam][colParam - 1] : null;
   const rightCell =
-    colParam < MAX_COLS - 1 ? cells[rowParam][colParam + 1] : null;
+    colParam < maxCols - 1 ? cells[rowParam][colParam + 1] : null;
   const bottomLeftCell =
-    rowParam < MAX_ROWS - 1 && colParam > 0
+    rowParam < maxRows - 1 && colParam > 0
       ? cells[rowParam + 1][colParam - 1]
       : null;
   const bottomCell =
-    rowParam < MAX_ROWS - 1 ? cells[rowParam + 1][colParam] : null;
+    rowParam < maxRows - 1 ? cells[rowParam + 1][colParam] : null;
   const bottomRightCell =
-    rowParam < MAX_ROWS - 1 && colParam < MAX_COLS - 1
+    rowParam < maxRows - 1 && colParam < maxCols - 1
       ? cells[rowParam + 1][colParam + 1]
       : null;
   return {
@@ -47,8 +48,9 @@ const grabAllAdjacentCells = (
   };
 };
 
-export const generateCells = (noOfBombs: number): CellProps[][] => {
+export const generateCells = (gameLevel: GameLevel): CellProps[][] => {
   let cells: CellProps[][] = [];
+  const { maxRows: MAX_ROWS, maxCols: MAX_COLS, noOfBombs } = gameLevel;
 
   // generating all cells
   for (let row = 0; row < MAX_ROWS; row++) {
@@ -102,7 +104,7 @@ export const generateCells = (noOfBombs: number): CellProps[][] => {
         bottomLeftCell,
         bottomCell,
         bottomRightCell,
-      } = grabAllAdjacentCells(cells, rowIndex, colIndex);
+      } = grabAllAdjacentCells(cells, rowIndex, colIndex, MAX_ROWS, MAX_COLS);
 
       if (topLeftCell?.value === 'bomb') numberOfBombs++;
       if (topCell?.value === 'bomb') numberOfBombs++;
@@ -128,8 +130,10 @@ export const openMultipleCells = (
   cells: CellProps[][],
   rowParam: number,
   colParam: number,
+  gameLevel: GameLevel,
 ): CellProps[][] => {
   const currentCell = cells[rowParam][colParam];
+  const { maxRows: MAX_ROWS, maxCols: MAX_COLS } = gameLevel;
 
   if (currentCell.state === 'visible' || currentCell.state === 'flagged') {
     return cells; // 플래그 꽂혀있는것도 고려해야함
@@ -147,12 +151,17 @@ export const openMultipleCells = (
     bottomLeftCell,
     bottomCell,
     bottomRightCell,
-  } = grabAllAdjacentCells(cells, rowParam, colParam);
+  } = grabAllAdjacentCells(cells, rowParam, colParam, MAX_ROWS, MAX_COLS);
 
   if (topLeftCell?.state === 'unknown' && topLeftCell.value !== 'bomb') {
     if (topLeftCell.value === 'none') {
       // open more more cells
-      newCells = openMultipleCells(newCells, rowParam - 1, colParam - 1);
+      newCells = openMultipleCells(
+        newCells,
+        rowParam - 1,
+        colParam - 1,
+        gameLevel,
+      );
     } else {
       newCells[rowParam - 1][colParam - 1].state = 'visible';
     }
@@ -160,7 +169,7 @@ export const openMultipleCells = (
   if (topCell?.state === 'unknown' && topCell.value !== 'bomb') {
     if (topCell.value === 'none') {
       // open more more cells
-      newCells = openMultipleCells(newCells, rowParam - 1, colParam);
+      newCells = openMultipleCells(newCells, rowParam - 1, colParam, gameLevel);
     } else {
       newCells[rowParam - 1][colParam].state = 'visible';
     }
@@ -168,7 +177,12 @@ export const openMultipleCells = (
   if (topRightCell?.state === 'unknown' && topRightCell.value !== 'bomb') {
     if (topRightCell.value === 'none') {
       // open more more cells
-      newCells = openMultipleCells(newCells, rowParam - 1, colParam + 1);
+      newCells = openMultipleCells(
+        newCells,
+        rowParam - 1,
+        colParam + 1,
+        gameLevel,
+      );
     } else {
       newCells[rowParam - 1][colParam + 1].state = 'visible';
     }
@@ -176,7 +190,7 @@ export const openMultipleCells = (
   if (leftCell?.state === 'unknown' && leftCell.value !== 'bomb') {
     if (leftCell.value === 'none') {
       // open more more cells
-      newCells = openMultipleCells(newCells, rowParam, colParam - 1);
+      newCells = openMultipleCells(newCells, rowParam, colParam - 1, gameLevel);
     } else {
       newCells[rowParam][colParam - 1].state = 'visible';
     }
@@ -184,7 +198,7 @@ export const openMultipleCells = (
   if (rightCell?.state === 'unknown' && rightCell.value !== 'bomb') {
     if (rightCell.value === 'none') {
       // open more more cells
-      newCells = openMultipleCells(newCells, rowParam, colParam + 1);
+      newCells = openMultipleCells(newCells, rowParam, colParam + 1, gameLevel);
     } else {
       newCells[rowParam][colParam + 1].state = 'visible';
     }
@@ -192,7 +206,12 @@ export const openMultipleCells = (
   if (bottomLeftCell?.state === 'unknown' && bottomLeftCell.value !== 'bomb') {
     if (bottomLeftCell.value === 'none') {
       // open more more cells
-      newCells = openMultipleCells(newCells, rowParam + 1, colParam - 1);
+      newCells = openMultipleCells(
+        newCells,
+        rowParam + 1,
+        colParam - 1,
+        gameLevel,
+      );
     } else {
       newCells[rowParam + 1][colParam - 1].state = 'visible';
     }
@@ -200,7 +219,7 @@ export const openMultipleCells = (
   if (bottomCell?.state === 'unknown' && bottomCell.value !== 'bomb') {
     if (bottomCell.value === 'none') {
       // open more more cells
-      newCells = openMultipleCells(newCells, rowParam + 1, colParam);
+      newCells = openMultipleCells(newCells, rowParam + 1, colParam, gameLevel);
     } else {
       newCells[rowParam + 1][colParam].state = 'visible';
     }
@@ -211,7 +230,12 @@ export const openMultipleCells = (
   ) {
     if (bottomRightCell.value === 'none') {
       // open more more cells
-      newCells = openMultipleCells(newCells, rowParam + 1, colParam + 1);
+      newCells = openMultipleCells(
+        newCells,
+        rowParam + 1,
+        colParam + 1,
+        gameLevel,
+      );
     } else {
       newCells[rowParam + 1][colParam + 1].state = 'visible';
     }
