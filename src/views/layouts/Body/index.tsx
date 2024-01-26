@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import { CellProps, Face, GameLevel, GameStatus } from '../../../types';
 import { generateCells, openMultipleCells } from '../../../utils';
-import { MAX_COLS, MAX_ROWS } from '../../../constants';
 import Cell from '../Cell';
 
 /**
@@ -72,6 +71,7 @@ const Body: React.FC<BodyProps> = ({
         newCells[rowParam][colParam].state = 'visible';
         // setCells(newCells); // do it after checking has won
       }
+      const { maxRows: MAX_ROWS, maxCols: MAX_COLS } = gameLevel;
 
       // check to see if you have won
       // winning condition :
@@ -134,7 +134,7 @@ const Body: React.FC<BodyProps> = ({
         };
         setCells(updateCells);
       },
-    [setCells, setBombCounter, gameStatus, setGameStatus],
+    [setCells, setBombCounter, gameLevel, gameStatus, setGameStatus],
   );
 
   const showAllBombs = (): CellProps[][] => {
