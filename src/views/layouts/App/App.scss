@@ -1,0 +1,34 @@
+@import '/src/styles/index.scss';
+
+.container {
+  width: auto;
+  max-width: 970px;
+  height: auto !important;
+  padding: 0;
+}
+
+.App {
+  position: relative;
+}
+
+.Level {
+  margin-bottom: 13px;
+  display: grid;
+}
+
+.SelectGameLevel {
+  display: flex;
+  float: left;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.levelSelect {
+  color: black;
+  &.active {
+    font-weight: 700;
+    text-decoration: none;
+  }
+}

@@ -9,7 +9,7 @@ import React, {
   useState,
 } from 'react';
 import NumberDisplay from '../../components/NumberDisplay';
-import { Face, GameStatus } from '../../types';
+import { Face, GameStatus } from '../../../types';
 import Button from '../../components/Button';
 
 /**

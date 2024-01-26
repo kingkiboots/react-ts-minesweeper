@@ -1,6 +1,6 @@
 import React, { SetStateAction, useCallback, useEffect, useRef } from 'react';
 import './Cell.scss';
-import { CellProps, Face, GameStatus } from '../../types';
+import { CellProps, Face, GameStatus } from '../../../types';
 import Button from '../../components/Button';
 
 /**
