@@ -173,7 +173,17 @@ const Body: React.FC<BodyProps> = ({
     if (gameStatus === 'reset') setCells(generateCells(gameLevel));
   }, [gameStatus, gameLevel]);
 
-  return <div className="Body">{renderCells()}</div>;
+  return (
+    <div
+      className="Body"
+      style={{
+        gridTemplateRows: `repeat(${gameLevel.maxRows}, 1fr)`,
+        gridTemplateColumns: `repeat(${gameLevel.maxCols}, 1fr)`,
+      }}
+    >
+      {renderCells()}
+    </div>
+  );
 };
 
 export default Body;

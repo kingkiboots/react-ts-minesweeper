@@ -16,8 +16,8 @@ export const NORMAL_LEVEL: GameLevel = {
 
 export const HARD_LEVEL: GameLevel = {
   label: '고급',
-  maxRows: 29,
-  maxCols: 15,
+  maxRows: 15,
+  maxCols: 29,
   noOfBombs: 99,
 };
 
