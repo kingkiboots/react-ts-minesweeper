@@ -39,6 +39,7 @@
     ]
   },
   "devDependencies": {
+    "@adobe/css-tools": "^4.3.3",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
@@ -47,7 +48,10 @@
     "eslint": "^8.54.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "follow-redirects": "^1.15.5",
     "gh-pages": "^6.1.1",
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.33",
     "prettier": "^3.1.0"
   }
 }
