@@ -4,9 +4,8 @@ import React, {
   useLayoutEffect,
   useState,
 } from 'react';
-import { CellProps, Face, GameStatus } from '../../types';
-import { generateCells, openMultipleCells } from '../../utils';
-import { MAX_COLS, MAX_ROWS } from '../../constants';
+import { CellProps, Face, GameLevel, GameStatus } from '../../../types';
+import { generateCells, openMultipleCells } from '../../../utils';
 import Cell from '../Cell';
 
 /**
@@ -15,7 +14,7 @@ import Cell from '../Cell';
 type BodyProps = {
   gameStatus: GameStatus;
   bombCounter: number;
-  noOfBombs: number;
+  gameLevel: GameLevel;
   setFace: React.Dispatch<SetStateAction<Face>>;
   setGameStatus: React.Dispatch<SetStateAction<GameStatus>>;
   setBombCounter: React.Dispatch<SetStateAction<number>>;
@@ -23,12 +22,12 @@ type BodyProps = {
 
 const Body: React.FC<BodyProps> = ({
   gameStatus,
-  noOfBombs,
+  gameLevel,
   setFace,
   setGameStatus,
   setBombCounter,
 }) => {
-  const [cells, setCells] = useState<CellProps[][]>(generateCells(noOfBombs));
+  const [cells, setCells] = useState<CellProps[][]>(generateCells(gameLevel));
 
   // console.log('cells', cells);
 
@@ -44,7 +43,7 @@ const Body: React.FC<BodyProps> = ({
       if (['unstarted', 'reset'].includes(gameStatus)) {
         let isCurrentCellBomb = newCells[rowParam][colParam].value === 'bomb';
         while (isCurrentCellBomb) {
-          newCells = generateCells(noOfBombs);
+          newCells = generateCells(gameLevel);
           if (newCells[rowParam][colParam].value !== 'bomb') {
             isCurrentCellBomb = false;
             break;
@@ -67,11 +66,12 @@ const Body: React.FC<BodyProps> = ({
         setCells(newCells);
       } else if (currentCell.value === 'none') {
         // TODO: 만약 value가 1이고 그 주변의 flag 수가 같다면 그 주변의 cell 들이 flag 된거 말고 열림
-        newCells = openMultipleCells(newCells, rowParam, colParam);
+        newCells = openMultipleCells(newCells, rowParam, colParam, gameLevel);
       } else {
         newCells[rowParam][colParam].state = 'visible';
         // setCells(newCells); // do it after checking has won
       }
+      const { maxRows: MAX_ROWS, maxCols: MAX_COLS } = gameLevel;
 
       // check to see if you have won
       // winning condition :
@@ -106,7 +106,7 @@ const Body: React.FC<BodyProps> = ({
 
       setCells(newCells);
     },
-    [gameStatus, noOfBombs, cells, setGameStatus, setCells, setBombCounter],
+    [gameStatus, gameLevel, cells, setGameStatus, setCells, setBombCounter],
   );
 
   const handleCellContext = useCallback(
@@ -134,7 +134,7 @@ const Body: React.FC<BodyProps> = ({
         };
         setCells(updateCells);
       },
-    [setCells, setBombCounter, gameStatus, setGameStatus],
+    [setCells, setBombCounter, gameLevel, gameStatus, setGameStatus],
   );
 
   const showAllBombs = (): CellProps[][] => {
@@ -170,10 +170,20 @@ const Body: React.FC<BodyProps> = ({
   };
 
   useLayoutEffect(() => {
-    if (gameStatus === 'reset') setCells(generateCells(noOfBombs));
-  }, [gameStatus, noOfBombs]);
+    if (gameStatus === 'reset') setCells(generateCells(gameLevel));
+  }, [gameStatus, gameLevel]);
 
-  return <div className="Body">{renderCells()}</div>;
+  return (
+    <div
+      className="Body"
+      style={{
+        gridTemplateRows: `repeat(${gameLevel.maxRows}, 1fr)`,
+        gridTemplateColumns: `repeat(${gameLevel.maxCols}, 1fr)`,
+      }}
+    >
+      {renderCells()}
+    </div>
+  );
 };
 
 export default Body;

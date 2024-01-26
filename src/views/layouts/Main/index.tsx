@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import './Main.scss';
 
-import { Face, GameStatus } from '../../types';
+import { Face, GameLevel, GameStatus } from '../../../types';
 import Header from '../Header';
 import Body from '../Body';
 
@@ -10,13 +10,13 @@ import Body from '../Body';
  * Main 컴포넌트 프로퍼티즈
  */
 type MainProps = {
-  numberOfBombs: number;
+  gameLevel: GameLevel;
 };
 
-const Main: React.FC<MainProps> = (props) => {
+const Main: React.FC<MainProps> = ({ gameLevel }) => {
   const [face, setFace] = useState<Face>('😄');
   const [gameStatus, setGameStatus] = useState<GameStatus>('unstarted');
-  const [bombCounter, setBombCounter] = useState<number>(props.numberOfBombs);
+  const [bombCounter, setBombCounter] = useState<number>(gameLevel.noOfBombs);
 
   useEffect(() => {
     const handlePressSpace = (e: KeyboardEvent) => {
@@ -31,8 +31,8 @@ const Main: React.FC<MainProps> = (props) => {
 
   useEffect(() => {
     setGameStatus('reset');
-    setBombCounter(props.numberOfBombs);
-  }, [props.numberOfBombs]);
+    setBombCounter(gameLevel.noOfBombs);
+  }, [gameLevel]);
 
   useEffect(() => {
     if (['unstarted', 'reset', 'started'].includes(gameStatus)) {
@@ -63,7 +63,7 @@ const Main: React.FC<MainProps> = (props) => {
         face={face}
         gameStatus={gameStatus}
         bombCounter={bombCounter}
-        noOfBombs={props.numberOfBombs}
+        noOfBombs={gameLevel.noOfBombs}
         setFace={setFace}
         setGameStatus={setGameStatus}
         setBombCounter={setBombCounter}
@@ -71,7 +71,7 @@ const Main: React.FC<MainProps> = (props) => {
       <Body
         gameStatus={gameStatus}
         bombCounter={bombCounter}
-        noOfBombs={props.numberOfBombs}
+        gameLevel={gameLevel}
         setFace={setFace}
         setGameStatus={setGameStatus}
         setBombCounter={setBombCounter}

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.scss';
 import reportWebVitals from './reportWebVitals';
-import App from './layouts/App';
+import App from './views/layouts/App';
 
 const rootElement = document.getElementById('root') as HTMLElement;
 const contentElement = <App />;
