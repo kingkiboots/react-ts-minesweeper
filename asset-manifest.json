@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/react-ts-minesweeper/static/css/main.bf7f5565.css",
-    "main.js": "/react-ts-minesweeper/static/js/main.6949355d.js",
+    "main.css": "/react-ts-minesweeper/static/css/main.eb43f382.css",
+    "main.js": "/react-ts-minesweeper/static/js/main.fdda332d.js",
     "static/js/787.4e39faa1.chunk.js": "/react-ts-minesweeper/static/js/787.4e39faa1.chunk.js",
     "index.html": "/react-ts-minesweeper/index.html",
-    "main.bf7f5565.css.map": "/react-ts-minesweeper/static/css/main.bf7f5565.css.map",
-    "main.6949355d.js.map": "/react-ts-minesweeper/static/js/main.6949355d.js.map",
+    "main.eb43f382.css.map": "/react-ts-minesweeper/static/css/main.eb43f382.css.map",
+    "main.fdda332d.js.map": "/react-ts-minesweeper/static/js/main.fdda332d.js.map",
     "787.4e39faa1.chunk.js.map": "/react-ts-minesweeper/static/js/787.4e39faa1.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.bf7f5565.css",
-    "static/js/main.6949355d.js"
+    "static/css/main.eb43f382.css",
+    "static/js/main.fdda332d.js"
   ]
 }
