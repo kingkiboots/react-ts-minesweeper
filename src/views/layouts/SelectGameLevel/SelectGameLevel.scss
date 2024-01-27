@@ -1,0 +1,16 @@
+.SelectGameLevel {
+  display: flex;
+  float: left;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.levelSelect {
+  color: black;
+  &.active {
+    font-weight: 700;
+    text-decoration: none;
+  }
+}
